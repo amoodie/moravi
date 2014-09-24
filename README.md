@@ -13,10 +13,9 @@ This script is to be placed in the same directory as that which contains the raw
 
 Where `Bulk Order *****/` is the folder downloaded from Earth Explorer and Bulk Download Application.
 
-Running
--------
+Running:
 
-To run the script, simply place it as described above,
+To run the script, simply place it as described above and:
 1. `cd` into `your_dir`
-1. make the file executable with `chmod 755 moravi.sh`
-1. and run with `./moravi.sh`
+2. make the file executable with `chmod 755 moravi.sh`
+3. and run with `./moravi.sh`
