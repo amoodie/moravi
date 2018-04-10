@@ -1,37 +1,16 @@
 #!/bin/bash
 
-#  .##.....##..#######..########.....###....##.....##.####
-#  .###...###.##.....##.##.....##...##.##...##.....##..##.
-#  .####.####.##.....##.##.....##..##...##..##.....##..##.
-#  .##.###.##.##.....##.########..##.....##.##.....##..##.
-#  .##.....##.##.....##.##...##...#########..##...##...##.
-#  .##.....##.##.....##.##....##..##.....##...##.##....##.
-#  .##.....##..#######..##.....##.##.....##....###....####
-#
-#						     v 0.3
-#						Sept. 2014
-#					   Andrew J Moodie
-#				https://github.com/amoodie
-#
-# This script is to be placed in the same directory as that which contains the raw
-# unextracted and unexplored downloaded data -- i.e. exactly as it was downloaded.
-# For example, if you want the complete pasted grid file in folder `your_dir`, then
-# the file structure should look like:
+# to add, the ability to extract files with this tool too. Remove the raw/intermediate datasets.
+
+
+
+
+
+# This script is to be placed in the same directory as that which contains all the SRTM data, unextracted and unexplored -- i.e. exactly as it was downloaded.
 # 
-#    your_dir/
-#	moravi.sh
-#	Bulk Order *****/
-#
-# Where `Bulk Order *****/` is the folder downloaded from Earth Explorer
-# and Bulk Download Application.
-
-
-
-
-#
-# version is:
-#
-version=0.3
+#  your_dir/
+#     moravi-v*.*.sh
+#     Bulk Order *****/ 
 
 
 #
@@ -44,19 +23,18 @@ version=0.3
 #
 # extract from .zip download dir
 #
-	cd Bulk*
-	cd SRTM*
-	unzip "*.zip" -d ../../unzipped
-	cd ..
-	cd ..
+
+	find . -name '*.zip' -exec sh -c 'unzip -d "`dirname \"{}\"`" "{}"' ';'
+#	for z in `ls ./Bulk*/SRTM*/*.zip | grep .zip$`; do unzip $z -d ./extracted; done
+#	unzip -d "./unzipped" "./Bulk\*/SRTM\*/*.zip"
 
 	
 #
 # extract just the .bil files
 #
-	cp ./unzipped/*.bil ./data
+	cp ./unzipped/**/*.bil ./data
 
-#	rm -r ./unzipped/
+#	rm -r ./unzipped
 
 
 #
@@ -70,8 +48,6 @@ version=0.3
 		    lat_raw=$(echo $file | awk -F "_" '{print $1}') # format: ./data/n36
 		    lat_str=$(echo $lat_raw | awk -F "/" '{print $3}') # format: n36
 		    lat_dir=${lat_str:0:1} # format: n
-		    lat_num=${lat_str:1:2}
-
 		    if [ "$lat_dir" = "n" ]
 		    	then
 			lat_b=${lat_str:1:2} # format: 36
@@ -129,8 +105,7 @@ version=0.3
 		#
 		# begin processing data
 		#
-		filename_out=${lat_dir}${lat_num}${lon_dir}${lon_num}
-		xyz2grd $file -G./grd_files/${filename_out}.grd \
+		xyz2grd $file -G./grd_files/${lat_str}${lon_str}.grd \
 		-R${lon_l}/${lon_r}/${lat_b}/${lat_t} \
 		-N-9999 -ZTLhw -I${grd_spc}c -V
 	done
@@ -161,7 +136,7 @@ version=0.3
 				fi
 			done
 	done
-	# check for max number of columns
+	# check for mac number of columns
 	declare -i maxcount=0
 	declare -i count
 	declare maxdirectory
@@ -191,11 +166,7 @@ version=0.3
 		grep -vFf "$file" ${xXX}.tmp >${lat}missing.out
 		[ -s ${lat}missing.out ] && echo ${file%.tmp} is missing $(cat ${lat}missing.out)
 	done
-	# iterate the .out files that have size > 0
-	# make the missing files
-	# named from filename and info in file
-	# put in correct folder
-	# delete temp and out files
+	# iterate the .out files that have size > 0, and make the files. named from filename and info in file. put in correct folder. delete temp and out files
 	for file in *.out
 		do
 		size=$(echo $(stat --printf="%s" $file ) )
@@ -220,7 +191,7 @@ version=0.3
 					elif [ "$lon_dir" = "w" ]
 						then
 						l=$(( ${lon:1:3} * -1 ))
-						r=$(( $l + 1 ))				
+						r=$(( $l + 1 ))										
 					fi
 					echo "l is" $l
 					echo "r is" $r

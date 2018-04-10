@@ -161,7 +161,7 @@ version=0.3
 				fi
 			done
 	done
-	# check for max number of columns
+	# check for mac number of columns
 	declare -i maxcount=0
 	declare -i count
 	declare maxdirectory
